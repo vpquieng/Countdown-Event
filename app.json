@@ -1,6 +1,6 @@
 {
   "expo": {
-    "scheme": "CountdownEventapp",
+    "scheme": "countdownevent",
     "name": "CountdownEvent",
     "slug": "CountdownEvent",
     "version": "1.0.0",

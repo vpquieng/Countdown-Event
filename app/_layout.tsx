@@ -1,6 +1,13 @@
 import { Stack } from "expo-router";
+import { Provider } from "jotai";
 import "./global.css"
 
 export default function RootLayout() {
-    return <Stack/>;
+    return (
+        <Provider>
+            <Stack
+                screenOptions={{ headerShown: false }}
+            />
+        </Provider>
+    );
 }
