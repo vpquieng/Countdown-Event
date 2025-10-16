@@ -42,7 +42,15 @@ export default function DeleteEvent() {
       <Text className="text-2xl font-bold text-gray-800 mb-4">
         Delete Event
       </Text>
-      <View className="bg-white p-6 rounded-lg w-full mb-6">
+      <View
+        className={`p-6 rounded-lg w-full mb-6 ${
+          eventToDelete.status === 'complete'
+           ? 'bg-green-400'
+            : eventToDelete.status === 'canceled'
+            ? 'bg-rose-400'
+            : 'bg-white'
+        }`}
+      >
         <Text className="text-lg text-gray-700 font-semibold mb-1">
           {eventToDelete.title}
         </Text>
@@ -63,10 +71,10 @@ export default function DeleteEvent() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        className="bg-gray-300 px-6 py-3 rounded-lg w-full"
+        className="bg-gray-400 px-6 py-3 rounded-lg w-full"
         onPress={() => router.back()}
       >
-        <Text className="text-center text-lg text-gray-700 font-semibold">
+        <Text className="text-center text-lg text-white font-semibold">
           Cancel
         </Text>
       </TouchableOpacity>

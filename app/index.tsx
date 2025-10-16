@@ -30,7 +30,15 @@ export default function Index() {
   }, [events, setEvents]);
 
   const renderItem = ({ item }: { item: Event }) => (
-    <View className="w-[90%] p-4 mb-4 bg-white rounded-2xl flex-row items-center justify-between">
+    <View 
+      className={`w-[90%] p-4 mb-4 rounded-2xl flex-row items-center justify-between ${
+      item.status === 'complete'
+        ? 'bg-green-400'
+        : item.status === 'canceled'
+        ? 'bg-rose-400'
+        : 'bg-white'
+    }`}
+    >
       <TouchableOpacity
         className="flex-1 pr-3"
         onPress={() => router.push(`/tabs/edit-event?id=${item.id}`)}
@@ -47,7 +55,7 @@ export default function Index() {
         className="ml-4"
         activeOpacity={0.8}
       >
-        <Ionicons name="trash" size={22} color="red" />
+        <Ionicons name="trash" size={22} color="black" />
       </TouchableOpacity>
     </View>
   );
