@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAtom } from 'jotai';
 import { eventListAtom, Event } from '../../atoms/eventAtom';
 
-export default function DeleteTask() {
+export default function DeleteEvent() {
     const router = useRouter();
     const [events, setEvents] = useAtom(eventListAtom);
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -30,7 +30,7 @@ export default function DeleteTask() {
           onPress: async () => {
             await setEvents(events.filter((event) => event.id !== id));
             Alert.alert('Deleted', 'Event has been deleted successfully.');
-            router.back();
+            router.push('/');
           },
         },
       ]

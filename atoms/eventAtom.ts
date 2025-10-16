@@ -6,6 +6,7 @@ export type Event = {
   title: string;
   date: string;
   time: string;
+  status: string;
   description?: string;
 };
 

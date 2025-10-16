@@ -50,6 +50,7 @@ export default function AddEvent() {
         id: Date.now().toString(),
         title,
         description,
+        status: 'upcoming',
         date: format(date!, 'yyyy-MM-dd'),
         time: format(time!, 'HH:mm'),
     };
@@ -87,7 +88,9 @@ export default function AddEvent() {
         className="bg-white rounded-xl p-4 mb-4"
         onPress={() => setShowDatePicker(true)}
       >
-        <Text className="text-lg text-gray-700">
+        <Text
+          className={`text-lg ${date ? 'text-gray-700' : 'text-[#C7C7CD]'}`}
+        >
           {date ? `📅 ${format(date, 'MMMM dd, yyyy')}` : 'Select Date'}
         </Text>
       </TouchableOpacity>
@@ -97,7 +100,9 @@ export default function AddEvent() {
         className="bg-white rounded-xl p-4 mb-4"
         onPress={() => setShowTimePicker(true)}
       >
-        <Text className="text-lg text-gray-700">
+        <Text
+          className={`text-lg ${time ? 'text-gray-700' : 'text-[#C7C7CD]'}`}
+        >
           {time ? `⏰ ${format(time, 'hh:mm a')}` : 'Select Time'}
         </Text>
       </TouchableOpacity>
@@ -117,6 +122,8 @@ export default function AddEvent() {
         mode="time"
         onConfirm={handleConfirmTime}
         onCancel={() => setShowTimePicker(false)}
+        minimumDate={new Date()}
+        date={new Date(Date.now() + 10 * 60 * 1000)}
       />
 
       {/* Save Button */}

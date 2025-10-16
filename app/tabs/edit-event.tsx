@@ -43,7 +43,8 @@ export default function EditEvent() {
         (date && format(date, 'yyyy-MM-dd') !== eventToEdit.date) ||
         (time && format(time, 'HH:mm') !== eventToEdit.time);
 
-    const isDisabled = !title.trim() || !date || !time || !isEdited;
+    const saveDisable = !title.trim() || !date || !time || !isEdited
+    const cancelDisable = eventToEdit.status === 'canceled' || eventToEdit.status === 'complete';
 
     const handleConfirmDate = (selectedDate: Date) => {
         setDate(selectedDate);
@@ -56,7 +57,7 @@ export default function EditEvent() {
     };
 
     const handleSave = () => {
-        if (isDisabled) {
+        if (saveDisable) {
             Alert.alert('No Changes', 'Please make changes before saving.');
             return;
         }
@@ -72,7 +73,7 @@ export default function EditEvent() {
         setEvents(events.map(event => (event.id === id ? updatedEvent : event)));
 
         Alert.alert('Success', 'Event updated successfully!');
-        router.back();
+        router.push('/');
     };
     return (
     <View className="flex-1 bg-yellow-200 px-6 pt-16">
@@ -97,20 +98,34 @@ export default function EditEvent() {
 
       {/* Date Picker */}
       <TouchableOpacity
-        className="bg-white rounded-xl p-4 mb-4"
+        className={`bg-white rounded-xl p-4 mb-4 ${
+          eventToEdit?.status === 'complete' || eventToEdit?.status === 'canceled' ? 'opacity-50' : ''
+        }`}
         onPress={() => setShowDatePicker(true)}
+        disabled={eventToEdit?.status === 'complete' || eventToEdit?.status === 'canceled'}
       >
-        <Text className="text-lg text-gray-700">
+        <Text
+          className={`text-lg ${
+            date ? 'text-gray-700' : 'text-[#C7C7CD]'
+          }`}
+        >
           {date ? `📅 ${format(date, 'MMMM dd, yyyy')}` : 'Select Date'}
         </Text>
       </TouchableOpacity>
 
       {/* Time Picker */}
       <TouchableOpacity
-        className="bg-white rounded-xl p-4 mb-4"
+        className={`bg-white rounded-xl p-4 mb-4 ${
+          eventToEdit?.status === 'complete' || eventToEdit?.status === 'canceled' ? 'opacity-50' : ''
+        }`}
         onPress={() => setShowTimePicker(true)}
+        disabled={eventToEdit?.status === 'complete' || eventToEdit?.status === 'canceled'}
       >
-        <Text className="text-lg text-gray-700">
+        <Text
+          className={`text-lg ${
+            time ? 'text-gray-700' : 'text-[#C7C7CD]'
+          }`}
+        >
           {time ? `⏰ ${format(time, 'hh:mm a')}` : 'Select Time'}
         </Text>
       </TouchableOpacity>
@@ -135,16 +150,29 @@ export default function EditEvent() {
       {/* Save Button */}
       <TouchableOpacity
         onPress={handleSave}
-        disabled={isDisabled}
+        disabled={saveDisable}
         className={`mt-6 rounded-full py-4 ${
-          isDisabled ? 'bg-gray-400' : 'bg-green-500'
+          saveDisable ? 'bg-gray-400' : 'bg-green-500'
         }`}
       >
         <Text className="text-center text-white text-lg font-semibold">Save Changes</Text>
       </TouchableOpacity>
+
+      {/* Cancel Button */}
       <TouchableOpacity
-        onPress={() => router.push(`/tabs/delete-task?id=${id}`)}
-        className={`mt-6 rounded-full py-4 bg-red-600`}
+        disabled={cancelDisable}
+        onPress={() => router.push(`/tabs/cancel-event?id=${id}`)}
+        className={`mt-6 rounded-full py-4 ${
+          cancelDisable ? 'bg-gray-400' : 'bg-red-600'
+        }`}
+      >
+        <Text className="text-center text-white text-lg font-semibold">Cancel Event</Text>
+      </TouchableOpacity>
+
+      {/* Delete Button */}
+      <TouchableOpacity
+        onPress={() => router.push(`/tabs/delete-event?id=${id}`)}
+        className="mt-6 rounded-full py-4 bg-red-600"
       >
         <Text className="text-center text-white text-lg font-semibold">Delete Event</Text>
       </TouchableOpacity>
