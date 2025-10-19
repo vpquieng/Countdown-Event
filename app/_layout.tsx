@@ -13,8 +13,7 @@ export default function RootLayout() {
     };
 
     initializeNotifications();
-
-    // ✅ Prevent duplicate scheduled notifications
+    
     return () => {
       Notifications.dismissAllNotificationsAsync();
     };

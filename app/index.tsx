@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
-import { eventListAtom, Event } from "../atoms/eventAtom";
+import { eventListAtom } from "../atoms/eventAtom";
 import { useRouter } from "expo-router";
 import { scheduleEventNotification } from "../utils/handle-notification";
 import AddButton from "./components/add-event-button";
+import EventList from "./components/event-list";
 
 export default function Index() {
   const [events, setEvents] = useAtom(eventListAtom);
-  const [now, setNow] = useState(new Date());
   const router = useRouter();
 
   useEffect(() => {
@@ -36,72 +36,6 @@ export default function Index() {
     return () => clearInterval(interval);
   }, [events, setEvents]);
 
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const formatRemaining = (target: Date, current: Date) => {
-  const diffMs = target.getTime() - current.getTime();
-  if (diffMs <= 0) return null; 
-
-  const totalMinutes = Math.floor(diffMs / 60000);
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
-
-  const parts: string[] = [];
-  if (days > 0) parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
-  if (hours > 0) parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
-  if (minutes > 0) parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-
-  if (parts.length === 0) return 'Less than a minute left';
-  return `${parts.join(', ')} left`;
-};
-
-const renderItem = ({ item }: { item: Event }) => {
-  const eventDateTime = new Date(`${item.date}T${item.time}`);
-  const remainingText = item.status === 'upcoming' ? formatRemaining(eventDateTime, now) : null;
-
-  return (
-    <View
-      className={`w-[90%] p-4 mb-4 rounded-2xl flex-row items-center justify-between ${
-        item.status === "complete"
-          ? "bg-green-400"
-          : item.status === "canceled"
-          ? "bg-rose-400"
-          : "bg-white"
-      }`}
-    >
-      <TouchableOpacity
-        className="flex-1 pr-3"
-        onPress={() => router.push(`/tabs/edit-event?id=${item.id}`)}
-        activeOpacity={0.8}
-      >
-        <Text className="text-gray-800 text-lg font-semibold">
-          {item.title}
-        </Text>
-        <Text className="text-gray-600 text-sm">
-          {item.date} • {item.time}
-        </Text>
-        {remainingText ? (
-          <Text className="text-gray-500 text-base mt-1">
-            {remainingText}
-          </Text>
-        ) : null}
-        <Text className="text-gray-600 text-sm mt-1">Status: {item.status}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => router.push(`/tabs/delete-event?id=${item.id}`)}
-        className="ml-4"
-        activeOpacity={0.8}
-      >
-        <Ionicons name="trash" size={22} color="black" />
-      </TouchableOpacity>
-    </View>
-  );
-};
-
   return (
     <View className="flex-1 bg-yellow-200 items-center pt-20 px-4">
       <Text className="text-2xl font-bold text-gray-800">
@@ -110,7 +44,13 @@ const renderItem = ({ item }: { item: Event }) => {
 
       <FlatList
         data={events}
-        renderItem={renderItem}
+        renderItem={({ item }) => (
+          <EventList
+            item={item}
+            onPressEdit={() => router.push(`/tabs/edit-event?id=${item.id}`)}
+            onPressDelete={() => router.push(`/tabs/delete-event?id=${item.id}`)}
+          />
+        )}
         keyExtractor={(item) => item.id}
         className="w-full mt-4"
         contentContainerClassName="items-center pb-10"

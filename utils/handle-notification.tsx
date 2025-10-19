@@ -41,6 +41,7 @@ export const scheduleEventNotification = async (event: Event) => {
 
   // Reminder notifications
   const reminders = [
+    { minutes: 60, message: `Reminder: "${event.title}" starts in 1 hour.` },
     { minutes: 30, message: `Reminder: "${event.title}" starts in 30 minutes.` },
     { minutes: 10, message: `Reminder: "${event.title}" starts in 10 minutes.` },
   ];
