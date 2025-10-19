@@ -1,13 +1,28 @@
 import { Stack } from "expo-router";
 import { Provider } from "jotai";
-import "./global.css"
+import { useEffect } from "react";
+import * as Notifications from 'expo-notifications';
+import { requestNotificationPermission, setupNotificationChannel } from "../utils/handle-notification";
+import "./global.css";
 
 export default function RootLayout() {
-    return (
-        <Provider>
-            <Stack
-                screenOptions={{ headerShown: false }}
-            />
-        </Provider>
-    );
+  useEffect(() => {
+    const initializeNotifications = async () => {
+      await setupNotificationChannel(); // Android channel setup
+      await requestNotificationPermission(); // Ask permission
+    };
+
+    initializeNotifications();
+
+    // ✅ Prevent duplicate scheduled notifications
+    return () => {
+      Notifications.dismissAllNotificationsAsync();
+    };
+  }, []);
+
+  return (
+    <Provider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </Provider>
+  );
 }

@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
-import { Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useAtom } from 'jotai';
-import { eventListAtom, Event } from '../atoms/eventAtom';
-import { useRouter } from 'expo-router';
-import AddButton from './components/add-event-button';
+import React, { useEffect } from "react";
+import { Text, View, FlatList, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useAtom } from "jotai";
+import { eventListAtom, Event } from "../atoms/eventAtom";
+import { useRouter } from "expo-router";
+import { scheduleEventNotification } from "../utils/handle-notification";
+import AddButton from "./components/add-event-button";
 
 export default function Index() {
   const [events, setEvents] = useAtom(eventListAtom);
@@ -15,11 +16,16 @@ export default function Index() {
       const now = new Date();
       const updatedEvents = events.map((event) => {
         const eventDateTime = new Date(`${event.date}T${event.time}`);
-        if (event.status === 'canceled') {
+        if (event.status === "canceled") {
           return event;
         }
-        if (event.status === 'upcoming' && now >= eventDateTime) {
-          return { ...event, status: 'complete' };
+        // Schedule notifications for upcoming events
+        if (event.status === "upcoming") {
+          scheduleEventNotification(event);
+        }
+        // Mark as complete when event time is reached
+        if (event.status === "upcoming" && now >= eventDateTime) {
+          return { ...event, status: "complete" };
         }
         return event;
       });
@@ -30,21 +36,23 @@ export default function Index() {
   }, [events, setEvents]);
 
   const renderItem = ({ item }: { item: Event }) => (
-    <View 
+    <View
       className={`w-[90%] p-4 mb-4 rounded-2xl flex-row items-center justify-between ${
-      item.status === 'complete'
-        ? 'bg-green-400'
-        : item.status === 'canceled'
-        ? 'bg-rose-400'
-        : 'bg-white'
-    }`}
+        item.status === "complete"
+          ? "bg-green-400"
+          : item.status === "canceled"
+          ? "bg-rose-400"
+          : "bg-white"
+      }`}
     >
       <TouchableOpacity
         className="flex-1 pr-3"
         onPress={() => router.push(`/tabs/edit-event?id=${item.id}`)}
         activeOpacity={0.8}
       >
-        <Text className="text-gray-800 text-lg font-semibold">{item.title}</Text>
+        <Text className="text-gray-800 text-lg font-semibold">
+          {item.title}
+        </Text>
         <Text className="text-gray-600 text-sm">{item.date}</Text>
         <Text className="text-gray-600 text-sm">{item.time}</Text>
         <Text className="text-gray-600 text-sm">Status: {item.status}</Text>
@@ -62,7 +70,10 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-yellow-200 items-center pt-20 px-4">
-      <Text className="text-2xl font-bold text-gray-800">Countdown Event App</Text>
+      <Text className="text-2xl font-bold text-gray-800">
+        Countdown Event App
+      </Text>
+
       <FlatList
         data={events}
         renderItem={renderItem}
@@ -82,11 +93,12 @@ export default function Index() {
           ) : null
         }
       />
+
       {events.length === 0 && (
         <TouchableOpacity
           className="absolute bottom-8 right-6 bg-white rounded-full w-16 h-16 items-center justify-center shadow-lg"
           activeOpacity={0.8}
-          onPress={() => router.push('/tabs/add-event')}
+          onPress={() => router.push("/tabs/add-event")}
         >
           <Ionicons name="add" size={40} color="black" />
         </TouchableOpacity>
