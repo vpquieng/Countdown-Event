@@ -5,6 +5,7 @@ import { useAtom } from "jotai";
 import { eventListAtom } from "../atoms/eventAtom";
 import { useRouter } from "expo-router";
 import { scheduleEventNotification } from "../utils/handle-notification";
+import { sortEventsByStatus } from "../utils/sort-event-status";
 import AddButton from "./components/add-event-button";
 import EventList from "./components/event-list";
 
@@ -21,8 +22,9 @@ export default function Index() {
           return event;
         }
         // Schedule notifications for upcoming events
-        if (event.status === "upcoming") {
+        if (event.status === "upcoming" && !event.notificationScheduled) {
           scheduleEventNotification(event);
+          return { ...event, notificationScheduled: true };
         }
         // Mark as complete when event time is reached
         if (event.status === "upcoming" && now >= eventDateTime) {
@@ -30,7 +32,8 @@ export default function Index() {
         }
         return event;
       });
-      setEvents(updatedEvents);
+      const sortedEvents = sortEventsByStatus(updatedEvents);
+      setEvents(sortedEvents);
     }, 1000);
 
     return () => clearInterval(interval);

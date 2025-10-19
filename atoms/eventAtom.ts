@@ -8,7 +8,7 @@ export type Event = {
   time: string;
   status: string;
   description?: string;
-  hasNotified?: boolean;
+  notificationScheduled?: boolean;
 };
 
 export const eventListAtom = atomWithStorage<Event[]>('events', [], {
