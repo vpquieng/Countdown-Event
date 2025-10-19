@@ -168,15 +168,7 @@ export default function EditEvent() {
       >
         <Text className="text-center text-white text-lg font-semibold">Cancel Event</Text>
       </TouchableOpacity>
-
-      {/* Delete Button */}
-      <TouchableOpacity
-        onPress={() => router.push(`/tabs/delete-event?id=${id}`)}
-        className="mt-6 rounded-full py-4 bg-red-600"
-      >
-        <Text className="text-center text-white text-lg font-semibold">Delete Event</Text>
-      </TouchableOpacity>
-
+      
       {/* Back Button */}
       <BackFooter />
     </View>

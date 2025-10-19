@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
@@ -9,6 +9,7 @@ import AddButton from "./components/add-event-button";
 
 export default function Index() {
   const [events, setEvents] = useAtom(eventListAtom);
+  const [now, setNow] = useState(new Date());
   const router = useRouter();
 
   useEffect(() => {
@@ -35,7 +36,34 @@ export default function Index() {
     return () => clearInterval(interval);
   }, [events, setEvents]);
 
-  const renderItem = ({ item }: { item: Event }) => (
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const formatRemaining = (target: Date, current: Date) => {
+  const diffMs = target.getTime() - current.getTime();
+  if (diffMs <= 0) return null; 
+
+  const totalMinutes = Math.floor(diffMs / 60000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+  if (hours > 0) parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+  if (minutes > 0) parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+
+  if (parts.length === 0) return 'Less than a minute left';
+  return `${parts.join(', ')} left`;
+};
+
+const renderItem = ({ item }: { item: Event }) => {
+  const eventDateTime = new Date(`${item.date}T${item.time}`);
+  const remainingText = item.status === 'upcoming' ? formatRemaining(eventDateTime, now) : null;
+
+  return (
     <View
       className={`w-[90%] p-4 mb-4 rounded-2xl flex-row items-center justify-between ${
         item.status === "complete"
@@ -53,11 +81,16 @@ export default function Index() {
         <Text className="text-gray-800 text-lg font-semibold">
           {item.title}
         </Text>
-        <Text className="text-gray-600 text-sm">{item.date}</Text>
-        <Text className="text-gray-600 text-sm">{item.time}</Text>
-        <Text className="text-gray-600 text-sm">Status: {item.status}</Text>
+        <Text className="text-gray-600 text-sm">
+          {item.date} • {item.time}
+        </Text>
+        {remainingText ? (
+          <Text className="text-gray-500 text-base mt-1">
+            {remainingText}
+          </Text>
+        ) : null}
+        <Text className="text-gray-600 text-sm mt-1">Status: {item.status}</Text>
       </TouchableOpacity>
-
       <TouchableOpacity
         onPress={() => router.push(`/tabs/delete-event?id=${item.id}`)}
         className="ml-4"
@@ -67,6 +100,7 @@ export default function Index() {
       </TouchableOpacity>
     </View>
   );
+};
 
   return (
     <View className="flex-1 bg-yellow-200 items-center pt-20 px-4">
