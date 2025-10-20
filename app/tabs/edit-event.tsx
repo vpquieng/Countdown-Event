@@ -6,6 +6,7 @@ import { eventListAtom, Event } from '../../atoms/eventAtom';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format, set } from 'date-fns';
 import BackFooter from '../components/back-footer';
+import { scheduleEventNotification } from '../../utils/handle-notification';
 
 export default function EditEvent() {
     const router = useRouter();
@@ -68,9 +69,12 @@ export default function EditEvent() {
             description,
             date: format(date!, 'yyyy-MM-dd'),
             time: format(time!, 'HH:mm'),
+            notificationScheduled: false
         };
 
         setEvents(events.map(event => (event.id === id ? updatedEvent : event)));
+
+        scheduleEventNotification(updatedEvent);
 
         Alert.alert('Success', 'Event updated successfully!');
         router.push('/');

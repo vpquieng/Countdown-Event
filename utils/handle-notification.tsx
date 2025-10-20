@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { Alert, Platform } from 'react-native';
 import { Event } from '../atoms/eventAtom';
 
-const eventNotificationMap: Record<string, string[]> = {};
+export const eventNotificationMap: Record<string, string[]> = {};
 
 // Set notification handler
 Notifications.setNotificationHandler({

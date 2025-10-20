@@ -1,7 +1,9 @@
 import React from 'react';
+import * as Notifications from 'expo-notifications';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAtom } from 'jotai';
+import { eventNotificationMap } from '../../utils/handle-notification';
 import { eventListAtom, Event } from '../../atoms/eventAtom';
 import BackFooter from '../components/back-footer';
 
@@ -30,7 +32,17 @@ export default function cancelEvent(){
               text: 'Cancel Event',
               style: 'destructive',
               onPress: async () => {
-                const updatedEvent = { ...eventToCancel, status: 'canceled' };
+                if (eventNotificationMap[eventToCancel.id]) {
+                  for (const notifId of eventNotificationMap[eventToCancel.id]) {
+                    await Notifications.cancelScheduledNotificationAsync(notifId);
+                  }
+                  delete eventNotificationMap[eventToCancel.id];
+                }
+                const updatedEvent = { 
+                  ...eventToCancel, 
+                  status: 'canceled',
+                  NotificationScheduled: false,
+                };
                 await setEvents(events.map((event) => event.id === id ? updatedEvent : event));
                 Alert.alert('Canceled', 'Event has been canceled successfully.');
                 router.push('/');
