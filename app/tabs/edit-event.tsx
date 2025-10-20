@@ -53,6 +53,21 @@ export default function EditEvent() {
     };
 
     const handleConfirmTime = (selectedTime: Date) => {
+        if(!date) return;
+        const now = new Date();
+        const selectedDateTime = new Date(date);
+        selectedDateTime.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const selectedDateOnly = new Date(date);
+        selectedDateOnly.setHours(0,0,0,0);
+
+        // If selected date is today and time has already passed, alert user
+        if(selectedDateOnly.getTime() === today.getTime() && selectedDateTime < now) {
+            Alert.alert('Invalid Time', 'Please select a future time for today\'s date.');
+            return;
+        }
         setTime(selectedTime);
         setShowTimePicker(false);
     };
@@ -149,6 +164,7 @@ export default function EditEvent() {
         mode="time"
         onConfirm={handleConfirmTime}
         onCancel={() => setShowTimePicker(false)}
+        date={time || new Date()}
       />
 
       {/* Save Button */}
