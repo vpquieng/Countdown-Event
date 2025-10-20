@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAtom } from 'jotai';
 import { eventListAtom, Event } from '../../atoms/eventAtom';
-import { format } from 'date-fns';
 import BackFooter from '../components/back-footer';
 
 export default function cancelEvent(){

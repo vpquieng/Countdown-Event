@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAtom } from 'jotai';
 import { eventListAtom, Event } from '../../atoms/eventAtom';
@@ -122,8 +122,11 @@ export default function AddEvent() {
         mode="time"
         onConfirm={handleConfirmTime}
         onCancel={() => setShowTimePicker(false)}
-        minimumDate={new Date()}
-        date={new Date(Date.now() + 10 * 60 * 1000)}
+        {...(Platform.OS === 'ios' ?{
+          minimumDate: new Date(),
+          date: new Date(Date.now() + 10 * 60 * 1000),
+        }:{
+        })}
       />
 
       {/* Save Button */}
