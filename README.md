@@ -60,6 +60,31 @@ eas build:run --platform android --profile development
 ```bash
 yarn run start
 ```
+### Run on:
+- Android Emulator → Press a
+- iOS Simulator (Mac only) → Press i
+- Physical device → Scan QR code using Expo Go app
+
+## Assumptions made
+- Events are scheduled for a specific date and time only (no repeating events).
+- Time format used is 24-hour format.
+- Notifications are local only (no backend or push server).
+- Countdown updates every 1 second using setInterval.
+- Disabled scheduling of duplicate notifications per event.
+
+## Time Spent on the Project
+Overall time spent: 8.5 hours
+
+## Future Improvements (Given More Time)
+- Add animation & better UI experience
+- Add categories or event tags
+- Support recurring events
+- Add search & filter events
+- Add event export/share feature
+- Add cloud sync (Supabase/Firebase)
+- Dark mode support
+- Test coverage and error handling
+- Notification snooze and dismiss actions
 
 ## Contributors
 - **Vincent Paul Quieng** - Developer 
