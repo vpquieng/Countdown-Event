@@ -2,19 +2,24 @@ import { useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { useAtom } from "jotai";
-import { usersAtom } from "../atoms/userAtom";
+import { currentUserAtom } from "../atoms/userAtom";
 
 export default function Index() {
   const router = useRouter();
-  const [user] = useAtom(usersAtom);
-  
+  const [currentUser] = useAtom(currentUserAtom);
+
   useEffect(() => {
-    if (user) {
-      router.replace("/auth");
-    } else {
-      router.replace("/login");
-    }
-  }, [user]);
+    // Wait a tick to ensure RootLayout has mounted
+    const timer = setTimeout(() => {
+      if (currentUser) {
+        router.replace("/auth"); // go to AuthLayout
+      } else {
+        router.replace("/login"); // go to public login screen
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [currentUser]);
 
   return (
     <View className="flex-1 items-center justify-center bg-yellow-200">

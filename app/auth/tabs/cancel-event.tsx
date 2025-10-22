@@ -66,7 +66,7 @@ export default function CancelEvent() {
             setCurrentUser({ ...currentUser, events: updatedEvents });
 
             Alert.alert('Event Canceled', 'The event has been successfully canceled.');
-            router.back();
+            router.replace('/auth');
           },
         },
       ]

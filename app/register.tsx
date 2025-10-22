@@ -69,9 +69,11 @@ export default function Register() {
     router.replace('/auth/index');
   };
 
+  const registerDisable = !name.trim() || !username.trim() || !email.trim() || !password || !confirmPassword;
+
   return (
     <View className="flex-1 justify-center items-center bg-yellow-200 px-6">
-      <Text className="text-3xl font-bold mb-8 text-gray-800">Register</Text>
+      <Text className="text-3xl font-bold mb-8 text-gray-800">Register Account</Text>
 
       <TextInput
         className="w-full bg-white p-4 rounded-lg mb-4"
@@ -113,7 +115,11 @@ export default function Register() {
         secureTextEntry
       />
 
-      <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-lg items-center" onPress={handleRegister}>
+      <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-lg items-center ${loginDisable ? 'bg-gray-400' : 'bg-green-500'}" 
+        onPress={handleRegister}
+        disabled={registerDisable}
+        >
+        
         <Text className="text-white font-semibold">Register</Text>
       </TouchableOpacity>
 

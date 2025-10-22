@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { Text, View, FlatList, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 import { usersAtom, currentUserAtom, User } from "../../atoms/userAtom";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 import { scheduleEventNotification } from "../../utils/handle-notification";
 import { sortEventsByStatus } from "../../utils/sort-event-status";
 import AddButton from "../components/add-event-button";
@@ -11,8 +11,28 @@ import EventList from "../components/event-list";
 
 export default function Index() {
   const router = useRouter();
+  const navigation = useNavigation();
   const [users, setUsers] = useAtom(usersAtom);
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+
+  // Add Logout button & header title
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: "Countdown Event App",
+      headerTitleAlign: "center",
+      headerRight: () => (
+        <TouchableOpacity
+          className="mr-4 p-2 bg-white rounded-full shadow"
+          onPress={() => {
+            setCurrentUser(null);
+            router.replace("/login");
+          }}
+        >
+          <MaterialCommunityIcons name="logout" size={22} color="black" />
+        </TouchableOpacity>
+      ),
+    });
+  }, []);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -21,7 +41,7 @@ export default function Index() {
     }
   }, [currentUser]);
 
-  // Update user events
+  //  Update user events
   const updateUserEvents = (updatedEvents: any[]) => {
     if (!currentUser) return;
 
@@ -33,7 +53,7 @@ export default function Index() {
     setCurrentUser({ ...currentUser, events: updatedEvents });
   };
 
-  // Auto-update event status + schedule notifications
+  // Auto-update event status + trigger notifications
   useEffect(() => {
     if (!currentUser) return;
 
@@ -41,7 +61,6 @@ export default function Index() {
       const now = new Date();
       const updatedEvents = currentUser.events.map((event) => {
         const eventDateTime = new Date(`${event.date}T${event.time}`);
-
         if (event.status === "canceled") return event;
 
         if (event.status === "upcoming" && !event.notificationScheduled) {
@@ -52,7 +71,6 @@ export default function Index() {
         if (event.status === "upcoming" && now >= eventDateTime) {
           return { ...event, status: "complete" };
         }
-
         return event;
       });
 
@@ -72,10 +90,7 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-yellow-200 items-center pt-20 px-4">
-      <Text className="text-2xl font-bold text-gray-800">
-        Welcome, {currentUser.name}
-      </Text>
-      <Text className="text-2xl font-bold text-gray-800">Countdown Event App</Text>
+      <Text className="text-lg text-gray-700">Welcome, {currentUser.name} 👋</Text>
 
       <FlatList
         data={currentUser.events}
@@ -97,7 +112,9 @@ export default function Index() {
         ListFooterComponent={
           currentUser.events.length > 0 ? (
             <View className="w-full items-center">
-              <AddButton />
+              <AddButton
+                onPressAdd={() => router.push('/auth/tabs/add-event')}
+              />
             </View>
           ) : null
         }

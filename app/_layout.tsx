@@ -1,12 +1,14 @@
-import { Stack } from "expo-router";
-import { Provider } from "jotai";
 import React from "react";
-import "global.css"
+import { Provider } from "jotai";
+import { Stack, Slot } from "expo-router";
+import "./global.css"
 
 export default function RootLayout() {
   return (
     <Provider>
-      <Stack screenOptions={{ headerShown: false }} />;
+      <Stack screenOptions={{ headerShown: false }}>
+        <Slot />
+      </Stack>
     </Provider>
   );
 }

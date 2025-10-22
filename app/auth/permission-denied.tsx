@@ -5,7 +5,7 @@ export default function PermissionDenied() {
   return (
     <View className="flex-1 bg-yellow-200 items-center justify-center px-6">
         <Image
-            source={require('@assets/access-denied.png')}
+            source={require('../../assets/access-denied.png')}
             style={{ width: 100, height: 100}}
             contentFit="contain"
         />

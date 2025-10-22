@@ -10,6 +10,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const loginDisable = !email.trim() || !password;
+
   const handleLogin = () => {
     const existingUser = users.find((u: User) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password);
 
@@ -19,7 +21,7 @@ export default function Login() {
     }
 
     setCurrentUser(existingUser);
-    router.replace('/auth/index');
+    router.replace('/auth');
   };
 
   return (
@@ -43,7 +45,11 @@ export default function Login() {
         secureTextEntry
       />
 
-      <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-lg items-center" onPress={handleLogin}>
+      <TouchableOpacity
+        className={`w-full p-4 rounded-lg items-center ${loginDisable ? 'bg-gray-400' : 'bg-green-500'}`}
+        onPress={handleLogin}
+        disabled={loginDisable}
+      >
         <Text className="text-white font-semibold">Login</Text>
       </TouchableOpacity>
 
