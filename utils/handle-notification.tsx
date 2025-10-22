@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { Event } from '../atoms/eventAtom';
 
 export const eventNotificationMap: Record<string, string[]> = {};
@@ -16,13 +16,16 @@ Notifications.setNotificationHandler({
 
 // Request notification permission
 export const requestNotificationPermission = async () => {
-  const { status } = await Notifications.requestPermissionsAsync();
-  if (status !== 'granted') {
-    Alert.alert('Permission Required', 'Please enable notifications to receive event reminders.');
-    return false; // Return false if permission is not granted
+  // Check current permission first
+  let settings = await Notifications.getPermissionsAsync();
+  // If not granted, request permission
+  if (!settings.granted) {
+    settings = await Notifications.requestPermissionsAsync();
   }
-  return true; // Return true if permission is granted
+  // Return permission result
+  return settings.granted;
 };
+
 
 // Schedule event notifications
 export const scheduleEventNotification = async (event: Event) => {
