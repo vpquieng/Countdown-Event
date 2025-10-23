@@ -98,6 +98,7 @@ export default function Index() {
             item={item}
             onPressEdit={() => router.push(`/auth/tabs/edit-event?id=${item.id}`)}
             onPressDelete={() => router.push(`/auth/tabs/delete-event?id=${item.id}`)}
+            onPressView={() => router.push(`/auth/tabs/view-event?id=${item.id}`)}
           />
         )}
         keyExtractor={(item) => item.id}

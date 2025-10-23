@@ -70,6 +70,10 @@ export default function AuthLayout() {
         name="tabs/edit-event"
         options={{ title: "Edit Event", headerShown: false }}
       />
+      <Stack.Screen
+        name="tabs/view-event"
+        options={{title: "View Event", headerShown: false}}
+      />
     </Stack>
   );
 }

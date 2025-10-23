@@ -8,9 +8,12 @@ interface EventListProps {
   item: Event;
   onPressEdit: () => void;
   onPressDelete: () => void;
+  onPressView: () => void;
 }
 
-export default function EventList({ item, onPressEdit, onPressDelete }: EventListProps) {
+export default function EventList({ item, onPressEdit, onPressDelete, onPressView }: EventListProps) {
+  const isViewable = item.status === "complete" || item.status === "canceled";
+
     return (
         <View
           className={`w-[90%] p-4 mb-4 rounded-2xl flex-row items-center justify-between ${
@@ -23,7 +26,7 @@ export default function EventList({ item, onPressEdit, onPressDelete }: EventLis
         >
           <TouchableOpacity
             className="flex-1 pr-3"
-            onPress= {onPressEdit}
+            onPress= {isViewable ? onPressView : onPressEdit}
             activeOpacity={0.8}
           >
             <Text className="text-gray-800 text-lg font-semibold">
