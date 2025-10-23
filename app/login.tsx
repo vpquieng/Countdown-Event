@@ -13,7 +13,11 @@ export default function Login() {
   const loginDisable = !email.trim() || !password;
 
   const handleLogin = () => {
-    const existingUser = users.find((u: User) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password);
+    const existingUser = users.find(
+      (u: User) =>
+        u.email.toLowerCase() === email.trim().toLowerCase() &&
+        u.password === password
+    );
 
     if (!existingUser) {
       Alert.alert('Login Failed', 'Invalid email or password.');
@@ -46,7 +50,9 @@ export default function Login() {
       />
 
       <TouchableOpacity
-        className={`w-full p-4 rounded-lg items-center ${loginDisable ? 'bg-gray-400' : 'bg-green-500'}`}
+        className={`w-full p-4 rounded-lg items-center ${
+          loginDisable ? 'bg-gray-400' : 'bg-green-500'
+        }`}
         onPress={handleLogin}
         disabled={loginDisable}
       >
@@ -55,7 +61,10 @@ export default function Login() {
 
       <Text className="text-center mt-4">
         Don't have an account?{' '}
-        <Text className="text-blue-600 font-semibold" onPress={() => router.push('/register')}>
+        <Text
+          className="text-blue-600 font-semibold"
+          onPress={() => router.push('/register')}
+        >
           Register
         </Text>
       </Text>

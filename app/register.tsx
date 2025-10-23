@@ -64,9 +64,7 @@ export default function Register() {
     const updated = [...users, newUser];
     setUsers(updated);
     setCurrentUser(newUser);
-
-    // Navigate to authenticated area
-    router.replace('/auth/index');
+    router.replace('/auth');
   };
 
   const registerDisable = !name.trim() || !username.trim() || !email.trim() || !password || !confirmPassword;
@@ -79,7 +77,9 @@ export default function Register() {
         className="w-full bg-white p-4 rounded-lg mb-4"
         placeholder="Name"
         value={name}
-        onChangeText={setName}
+        onChangeText={(text) =>
+          setName(text.charAt(0).toUpperCase() + text.slice(1))
+        }
       />
 
       <TextInput
@@ -115,10 +115,13 @@ export default function Register() {
         secureTextEntry
       />
 
-      <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-lg items-center ${loginDisable ? 'bg-gray-400' : 'bg-green-500'}" 
+      <TouchableOpacity
+        className={`w-full p-4 rounded-lg items-center ${
+          registerDisable ? "bg-gray-400" : "bg-green-500"
+        }`}
         onPress={handleRegister}
         disabled={registerDisable}
-        >
+      >
         
         <Text className="text-white font-semibold">Register</Text>
       </TouchableOpacity>

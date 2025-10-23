@@ -15,14 +15,13 @@ export default function Index() {
   const [users, setUsers] = useAtom(usersAtom);
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
 
-  // Add Logout button & header title
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Countdown Event App",
       headerTitleAlign: "center",
       headerRight: () => (
         <TouchableOpacity
-          className="mr-4 p-2 bg-white rounded-full shadow"
+          className="mr-4 p-2"
           onPress={() => {
             setCurrentUser(null);
             router.replace("/login");

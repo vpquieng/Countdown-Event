@@ -4,12 +4,12 @@ import { atom } from 'jotai';
 import { Event } from './eventAtom';
 
 export type User = {
-    id: string;
-    email: string;
-    username: string;
-    name: string;
-    password: string;
-    events: Event[];
+  id: string;
+  email: string;
+  username: string;
+  name: string;
+  password: string;
+  events: Event[];
 }
 
 export const usersAtom = atomWithStorage<User[]>('users', [], {

@@ -7,7 +7,11 @@ export default function RootLayout() {
   return (
     <Provider>
       <Stack screenOptions={{ headerShown: false }}>
-        <Slot />
+        <Stack.Screen name="index" options={{title: "Welcome"}} />
+
+        <Stack.Screen name="login" options={{title: "Sign in"}} />
+
+        <Stack.Screen name="register" options={{title: "Sign up"}} />
       </Stack>
     </Provider>
   );

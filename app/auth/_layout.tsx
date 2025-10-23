@@ -1,4 +1,4 @@
-import { Stack, Slot, Redirect } from "expo-router";
+import { Stack, Slot, Redirect, useRouter } from "expo-router";
 import { useAtom } from "jotai";
 import { currentUserAtom } from "../../atoms/userAtom";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import {
 
 
 export default function AuthLayout() {
+  const router = useRouter();
   const [currentUser] = useAtom(currentUserAtom);
   const [permissionChecked, setPermissionChecked] = useState(false);
   const [hasPermission, setHasPermission] = useState(true);
@@ -28,7 +29,7 @@ export default function AuthLayout() {
 
   // Redirect if no user or no permission
   if (!currentUser) return <Redirect href="/login" />;
-  if (!hasPermission) return <Redirect href="/permission-denied" />;
+  if (!hasPermission) return <Redirect href="/auth/permission-denied" />;
 
   return (
     <Stack
@@ -39,7 +40,9 @@ export default function AuthLayout() {
       }}
     >
       {/* Main screen that shows your tab navigator */}
-      <Stack.Screen name="index" options={{ title: "Home" }} />
+      <Stack.Screen 
+        name="index" 
+        options={{ title: "Home", headerBackVisible: false }} />
 
       {/* Permission denied screen */}
       <Stack.Screen
