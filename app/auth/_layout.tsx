@@ -1,4 +1,4 @@
-import { Stack, Slot, Redirect, useRouter } from "expo-router";
+import { Stack, Redirect, useSegments } from "expo-router";
 import { useAtom } from "jotai";
 import { currentUserAtom } from "../../atoms/userAtom";
 import { useEffect, useState } from "react";
@@ -9,10 +9,10 @@ import {
 
 
 export default function AuthLayout() {
-  const router = useRouter();
   const [currentUser] = useAtom(currentUserAtom);
-  const [permissionChecked, setPermissionChecked] = useState(false);
-  const [hasPermission, setHasPermission] = useState(true);
+  const segments = useSegments();
+  const [permissionChecked, setPermissionChecked] = useState<boolean>(false);
+  const [hasPermission, setHasPermission] = useState<boolean>(true);
 
   // Initialize notifications
   useEffect(() => {
@@ -26,10 +26,13 @@ export default function AuthLayout() {
   }, []);
 
   if (!permissionChecked) return null;
+  const onPermissionPage = segments?.includes("permission-denied");
 
-  // Redirect if no user or no permission
+  if (!hasPermission && !onPermissionPage) {
+    return <Redirect href="/auth/permission-denied" />
+  }
+
   if (!currentUser) return <Redirect href="/login" />;
-  if (!hasPermission) return <Redirect href="/auth/permission-denied" />;
 
   return (
     <Stack
