@@ -26,7 +26,7 @@ export default function AuthLayout() {
   }, []);
 
   if (!permissionChecked) return null;
-  
+
   const onPermissionPage = segments?.includes("permission-denied");
 
   if (!hasPermission && !onPermissionPage) {
@@ -64,6 +64,10 @@ export default function AuthLayout() {
       <Stack.Screen
         name="tabs/cancel-event"
         options={{ title: "Cancel Event", headerShown: false }}
+      />
+      <Stack.Screen
+        name="tabs/complete-event"
+        options={{ title: "Complete Events",headerShown: true, headerBackVisible: false }}
       />
       <Stack.Screen
         name="tabs/delete-event"

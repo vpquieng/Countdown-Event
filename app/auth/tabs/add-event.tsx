@@ -125,6 +125,7 @@ export default function AddEvent() {
           date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
             ? {
                 minimumDate: new Date(),
+                date: new Date(Date.now() + 10 * 60 * 1000),
               }
             : {
                 minimumDate: undefined

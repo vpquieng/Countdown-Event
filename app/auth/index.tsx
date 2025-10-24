@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import { Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 import { usersAtom, currentUserAtom, User } from "../../atoms/userAtom";
 import { useRouter, useNavigation } from "expo-router";
@@ -104,7 +104,7 @@ export default function Index() {
       <Text className="text-lg text-gray-700">Welcome, {currentUser.name} 👋</Text>
 
       <FlatList
-        data={currentUser.events}
+        data={currentUser.events.filter(event => event.status !== "complete")}
         renderItem={({ item }) => (
           <EventList
             item={item}
@@ -141,6 +141,13 @@ export default function Index() {
           <Ionicons name="add" size={40} color="black" />
         </TouchableOpacity>
       )}
+      <TouchableOpacity
+        className="absolute bottom-8 left-6 bg-green-500 rounded-full w-16 h-16 items-center justify-center shadow-lg"
+        activeOpacity={0.8}
+        onPress={() => router.push("/auth/tabs/complete-event")}
+      >
+        <MaterialCommunityIcons name="check" size={36} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }
