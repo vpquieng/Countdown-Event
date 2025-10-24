@@ -26,13 +26,16 @@ export default function AuthLayout() {
   }, []);
 
   if (!permissionChecked) return null;
+  
   const onPermissionPage = segments?.includes("permission-denied");
 
   if (!hasPermission && !onPermissionPage) {
     return <Redirect href="/auth/permission-denied" />
   }
 
-  if (!currentUser) return <Redirect href="/login" />;
+  if (!currentUser?.token) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <Stack

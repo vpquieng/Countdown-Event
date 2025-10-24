@@ -10,6 +10,7 @@ export type User = {
   name: string;
   password: string;
   events: Event[];
+  token?: string;
 }
 
 export const usersAtom = atomWithStorage<User[]>('users', [], {
@@ -26,4 +27,15 @@ export const usersAtom = atomWithStorage<User[]>('users', [], {
 });
    
 
-export const currentUserAtom = atom<User | null>(null);
+export const currentUserAtom = atomWithStorage<User | null>('currentUser', null, {
+  getItem: async (key) => {
+    const item = await AsyncStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  },
+  setItem: async (key, value) => {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+  },
+  removeItem: async (key) => {
+    await AsyncStorage.removeItem(key);
+  },
+});

@@ -6,6 +6,7 @@ import { usersAtom, currentUserAtom, User } from "../../atoms/userAtom";
 import { useRouter, useNavigation } from "expo-router";
 import { scheduleEventNotification } from "../../utils/handle-notification";
 import { sortEventsByStatus } from "../../utils/sort-event-status";
+import { logoutUser } from "../../utils/auth-utils";
 import AddButton from "../components/add-event-button";
 import EventList from "../components/event-list";
 
@@ -23,7 +24,8 @@ export default function Index() {
         <TouchableOpacity
           className="mr-4 p-2"
           onPress={() => {
-            setCurrentUser(null);
+            const loggedOutUser = logoutUser();
+            setCurrentUser(loggedOutUser); // sets null safely
             router.replace("/login");
           }}
         >
@@ -32,13 +34,6 @@ export default function Index() {
       ),
     });
   }, []);
-
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!currentUser) {
-      router.replace("/login");
-    }
-  }, [currentUser]);
 
   //  Update user events
   const updateUserEvents = (updatedEvents: any[]) => {

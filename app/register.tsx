@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useAtom } from 'jotai';
 import { usersAtom, currentUserAtom, User } from '../atoms/userAtom';
+import { loginUser } from '../utils/auth-utils';
 import uuid from 'react-native-uuid';
 import BackFooter from './components/back-footer';
 
@@ -18,7 +19,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!name.trim() || !username.trim() || !email.trim() || !password || !confirmPassword) {
       Alert.alert('Missing Fields', 'Please fill in all required fields.');
       return;
@@ -63,7 +64,12 @@ export default function Register() {
 
     const updated = [...users, newUser];
     setUsers(updated);
-    setCurrentUser(newUser);
+
+    // ✅ Generate auth token and set current user
+    const authenticatedUser = await loginUser(newUser);
+    setCurrentUser(authenticatedUser);
+
+    // ✅ Redirect to app
     router.replace('/auth');
   };
 

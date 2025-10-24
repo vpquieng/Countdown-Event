@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useAtom } from 'jotai';
 import { usersAtom, currentUserAtom, User } from '../atoms/userAtom';
+import { loginUser } from '../utils/auth-utils';
 
 export default function Login() {
   const [users] = useAtom(usersAtom);
@@ -12,7 +13,7 @@ export default function Login() {
 
   const loginDisable = !email.trim() || !password;
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const existingUser = users.find(
       (u: User) =>
         u.email.toLowerCase() === email.trim().toLowerCase() &&
@@ -24,7 +25,13 @@ export default function Login() {
       return;
     }
 
-    setCurrentUser(existingUser);
+    // ✅ Generate token & save session
+    const loggedInUser = await loginUser(existingUser);
+
+    // ✅ Save logged in user to Atom
+    setCurrentUser(loggedInUser);
+
+    // ✅ Redirect to authenticated area
     router.replace('/auth');
   };
 
