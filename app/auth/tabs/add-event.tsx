@@ -30,6 +30,7 @@ export default function AddEvent() {
 
   const handleConfirmDate = (selectedDate: Date) => {
     setDate(selectedDate);
+    setTime(null);
     setShowDatePicker(false);
   };
 
@@ -120,12 +121,15 @@ export default function AddEvent() {
         mode="time"
         onConfirm={handleConfirmTime}
         onCancel={() => setShowTimePicker(false)}
-        {...(Platform.OS === 'ios'
-          ? {
-              minimumDate: new Date(),
-              date: new Date(Date.now() + 10 * 60 * 1000),
-            }
-          : {})}
+        {...(
+          date && format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+            ? {
+                minimumDate: new Date(),
+              }
+            : {
+                minimumDate: undefined
+              }
+        )}
       />
 
       <TouchableOpacity

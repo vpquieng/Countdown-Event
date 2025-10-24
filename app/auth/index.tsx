@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import { Text, View, FlatList, TouchableOpacity } from "react-native";
+import { Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 import { usersAtom, currentUserAtom, User } from "../../atoms/userAtom";
@@ -24,9 +24,26 @@ export default function Index() {
         <TouchableOpacity
           className="mr-4 p-2"
           onPress={() => {
-            const loggedOutUser = logoutUser();
-            setCurrentUser(loggedOutUser); // sets null safely
-            router.replace("/login");
+            Alert.alert(
+              "Logout",
+              "Are you sure you want to log out?",
+              [
+                {
+                  text: "Cancel",
+                  style: "cancel",
+                },
+                {
+                  text: "Confirm",
+                  style: "destructive",
+                  onPress: () => {
+                    const loggedOutUser = logoutUser();
+                    setCurrentUser(loggedOutUser);
+                    router.replace("/login");
+                  },
+                },
+              ],
+              { cancelable: true }
+            );
           }}
         >
           <MaterialCommunityIcons name="logout" size={22} color="black" />
