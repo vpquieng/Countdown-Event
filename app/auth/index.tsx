@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import { Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
-import { AntDesign, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 import { usersAtom, currentUserAtom, User } from "../../atoms/userAtom";
 import { useRouter, useNavigation } from "expo-router";
@@ -15,6 +15,8 @@ export default function Index() {
   const navigation = useNavigation();
   const [users, setUsers] = useAtom(usersAtom);
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+
+  const activeEvents = currentUser?.events?.filter(e => e.status !== "complete") || [];
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -64,7 +66,7 @@ export default function Index() {
     setCurrentUser({ ...currentUser, events: updatedEvents });
   };
 
-  // Auto-update event status + trigger notifications
+  // Update event status automatically
   useEffect(() => {
     if (!currentUser) return;
 
@@ -104,7 +106,7 @@ export default function Index() {
       <Text className="text-lg text-gray-700">Welcome, {currentUser.name} 👋</Text>
 
       <FlatList
-        data={currentUser.events.filter(event => event.status !== "complete")}
+        data={activeEvents}
         renderItem={({ item }) => (
           <EventList
             item={item}
@@ -118,21 +120,21 @@ export default function Index() {
         contentContainerClassName="items-center pb-10"
         ListEmptyComponent={
           <Text className="text-gray-500 text-lg mt-10 mb-10 text-center">
-            No events yet. Add a new event!
+            No active events. Add a new event!
           </Text>
         }
         ListFooterComponent={
-          currentUser.events.length > 0 ? (
+          activeEvents.length > 0 ? (
             <View className="w-full items-center">
               <AddButton
-                onPressAdd={() => router.push('/auth/tabs/add-event')}
+                onPressAdd={() => router.push("/auth/tabs/add-event")}
               />
             </View>
           ) : null
         }
       />
 
-      {currentUser.events.length === 0 && (
+      {activeEvents.length === 0 && (
         <TouchableOpacity
           className="absolute bottom-8 right-6 bg-white rounded-full w-16 h-16 items-center justify-center shadow-lg"
           activeOpacity={0.8}
