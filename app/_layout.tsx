@@ -2,22 +2,28 @@ import React, { useEffect } from "react";
 import { Provider, useAtom } from "jotai";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { currentUserAtom } from "../atoms/userAtom";
-import "./global.css"
+import { debugAsyncStorage } from "../utils/debug-storage";
+// TypeScript may complain about side-effect CSS imports in this project setup.
+// @ts-ignore: Allow importing global CSS for styling
+import "./global.css";
 
 function RootNavigation() {
   const router = useRouter();
-  const [currentUser] = useAtom(currentUserAtom);
   const segments = useSegments();
+  const [currentUser] = useAtom(currentUserAtom);
 
   useEffect(() => {
-    const inAuthGroup = segments[0] === "auth";
+    debugAsyncStorage("APP START STORAGE CHECK");
+  }, []);
 
-    // ✅ If logged in and NOT in /auth, go to /auth
+  useEffect(() => {
+    const firstSegment = segments[0];
+    const inAuthGroup = firstSegment === "auth";
+
     if (currentUser?.token && !inAuthGroup) {
-      router.replace("/auth"); 
+      router.replace("/auth");
     }
 
-    // ✅ If NOT logged in and trying to access /auth, send to login
     if (!currentUser?.token && inAuthGroup) {
       router.replace("/login");
     }
@@ -25,9 +31,10 @@ function RootNavigation() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" options={{ title: "Welcome" }} />
-      <Stack.Screen name="login" options={{ title: "Sign in" }} />
-      <Stack.Screen name="register" options={{ title: "Sign up" }} />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="login" />
+      <Stack.Screen name="register" />
+      <Stack.Screen name="auth" />
     </Stack>
   );
 }

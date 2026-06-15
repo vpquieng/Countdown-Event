@@ -1,55 +1,62 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { router } from 'expo-router';
-import { useAtom } from 'jotai';
-import { usersAtom, currentUserAtom, User } from '../atoms/userAtom';
-import { loginUser } from '../utils/auth-utils';
-import uuid from 'react-native-uuid';
-import BackFooter from './components/back-footer';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { router } from "expo-router";
+import { useAtom } from "jotai";
+import { usersAtom, currentUserAtom, User } from "../atoms/userAtom";
+import { loginUser } from "../utils/auth-utils";
+import { debugAsyncStorage } from "../utils/debug-storage";
+import uuid from "react-native-uuid";
+import BackFooter from "./components/back-footer";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum eight characters, at least one letter and one number
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
 export default function Register() {
   const [users, setUsers] = useAtom(usersAtom);
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async () => {
     if (!name.trim() || !username.trim() || !email.trim() || !password || !confirmPassword) {
-      Alert.alert('Missing Fields', 'Please fill in all required fields.');
+      Alert.alert("Missing Fields", "Please fill in all required fields.");
       return;
     }
 
     if (!emailRegex.test(email)) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
       return;
     }
 
     if (!passwordRegex.test(password)) {
-      Alert.alert('Weak Password', 'Password must be at least 8 characters and include at least one number.');
+      Alert.alert("Weak Password", "Password must be at least 8 characters and include at least one number.");
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Password Mismatch', 'Passwords do not match.');
+      Alert.alert("Password Mismatch", "Passwords do not match.");
       return;
     }
 
-    // Ensure email and username are unique
-    const existingByEmail = users.find((u: User) => u.email.toLowerCase() === email.toLowerCase());
+    const existingByEmail = users.find(
+      (u: User) => u.email.toLowerCase() === email.trim().toLowerCase()
+    );
+
     if (existingByEmail) {
-      Alert.alert('Email Taken', 'An account with that email already exists.');
+      Alert.alert("Email Taken", "An account with that email already exists.");
       return;
     }
 
-    const existingByUsername = users.find((u: User) => u.username.toLowerCase() === username.toLowerCase());
+    const existingByUsername = users.find(
+      (u: User) => u.username.toLowerCase() === username.trim().toLowerCase()
+    );
+
     if (existingByUsername) {
-      Alert.alert('Username Taken', 'Please choose a different username.');
+      Alert.alert("Username Taken", "Please choose a different username.");
       return;
     }
 
@@ -62,22 +69,28 @@ export default function Register() {
       events: [],
     };
 
-    const updated = [...users, newUser];
-    setUsers(updated);
+    const updatedUsers = [...users, newUser];
 
-    // ✅ Generate auth token and set current user
+    setUsers(updatedUsers);
+
     const authenticatedUser = await loginUser(newUser);
     setCurrentUser(authenticatedUser);
 
-    // ✅ Redirect to app
-    router.replace('/auth');
+    setTimeout(() => {
+      debugAsyncStorage("AFTER REGISTER");
+    }, 500);
+
+    router.replace("/auth");
   };
 
-  const registerDisable = !name.trim() || !username.trim() || !email.trim() || !password || !confirmPassword;
+  const registerDisable =
+    !name.trim() || !username.trim() || !email.trim() || !password || !confirmPassword;
 
   return (
     <View className="flex-1 justify-center items-center bg-yellow-200 px-6">
-      <Text className="text-3xl font-bold mb-8 text-gray-800">Register Account</Text>
+      <Text className="text-3xl font-bold mb-8 text-gray-800">
+        Register Account
+      </Text>
 
       <TextInput
         className="w-full bg-white p-4 rounded-lg mb-4"
@@ -128,7 +141,6 @@ export default function Register() {
         onPress={handleRegister}
         disabled={registerDisable}
       >
-        
         <Text className="text-white font-semibold">Register</Text>
       </TouchableOpacity>
 

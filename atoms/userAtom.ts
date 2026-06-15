@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { atomWithStorage } from 'jotai/utils';
-import { atom } from 'jotai';
-import { Event } from './eventAtom';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { Event } from "./eventAtom";
 
 export type User = {
   id: string;
@@ -11,31 +10,21 @@ export type User = {
   password: string;
   events: Event[];
   token?: string;
-}
+};
 
-export const usersAtom = atomWithStorage<User[]>('users', [], {
-  getItem: async (key) => {
-    const item = await AsyncStorage.getItem(key);
-    return item ? JSON.parse(item) : [];
-  },
-  setItem: async (key, value) => {
-    await AsyncStorage.setItem(key, JSON.stringify(value));
-  },
-  removeItem: async (key) => {
-    await AsyncStorage.removeItem(key);
-  },
-});
-   
+const usersStorage = createJSONStorage<User[]>(() => AsyncStorage);
+const currentUserStorage = createJSONStorage<User | null>(() => AsyncStorage);
 
-export const currentUserAtom = atomWithStorage<User | null>('currentUser', null, {
-  getItem: async (key) => {
-    const item = await AsyncStorage.getItem(key);
-    return item ? JSON.parse(item) : null;
-  },
-  setItem: async (key, value) => {
-    await AsyncStorage.setItem(key, JSON.stringify(value));
-  },
-  removeItem: async (key) => {
-    await AsyncStorage.removeItem(key);
-  },
-});
+export const usersAtom = atomWithStorage<User[]>(
+  "users",
+  [],
+  usersStorage,
+  { getOnInit: true }
+);
+
+export const currentUserAtom = atomWithStorage<User | null>(
+  "currentUser",
+  null,
+  currentUserStorage,
+  { getOnInit: true }
+);

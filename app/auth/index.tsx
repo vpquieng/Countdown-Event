@@ -6,92 +6,123 @@ import { usersAtom, currentUserAtom, User } from "../../atoms/userAtom";
 import { useRouter, useNavigation } from "expo-router";
 import { scheduleEventNotification } from "../../utils/handle-notification";
 import { sortEventsByStatus } from "../../utils/sort-event-status";
-import { logoutUser } from "../../utils/auth-utils";
 import AddButton from "../components/add-event-button";
 import EventList from "../components/event-list";
+import { debugAsyncStorage } from "../../utils/debug-storage";
 
 export default function Index() {
   const router = useRouter();
   const navigation = useNavigation();
+
   const [users, setUsers] = useAtom(usersAtom);
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
 
-  const activeEvents = currentUser?.events?.filter(e => e.status !== "complete") || [];
+  const activeEvents =
+    currentUser?.events?.filter((e) => e.status !== "complete") || [];
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to log out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          style: "destructive",
+          onPress: () => {
+            setCurrentUser(null);
+
+            setTimeout(() => {
+              debugAsyncStorage("AFTER LOGOUT");
+            }, 500);
+
+            router.replace("/login");
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Countdown Event App",
       headerTitleAlign: "center",
       headerRight: () => (
-        <TouchableOpacity
-          className="mr-4 p-2"
-          onPress={() => {
-            Alert.alert(
-              "Logout",
-              "Are you sure you want to log out?",
-              [
-                {
-                  text: "Cancel",
-                  style: "cancel",
-                },
-                {
-                  text: "Confirm",
-                  style: "destructive",
-                  onPress: () => {
-                    const loggedOutUser = logoutUser();
-                    setCurrentUser(loggedOutUser);
-                    router.replace("/login");
-                  },
-                },
-              ],
-              { cancelable: true }
-            );
-          }}
-        >
+        <TouchableOpacity className="mr-4 p-2" onPress={handleLogout}>
           <MaterialCommunityIcons name="logout" size={22} color="black" />
         </TouchableOpacity>
       ),
     });
-  }, []);
+  }, [navigation, currentUser]);
 
-  //  Update user events
   const updateUserEvents = (updatedEvents: any[]) => {
     if (!currentUser) return;
 
+    const sortedEvents = sortEventsByStatus(updatedEvents);
+
     const updatedUsers = users.map((u: User) =>
-      u.id === currentUser.id ? { ...u, events: updatedEvents } : u
+      u.id === currentUser.id ? { ...u, events: sortedEvents } : u
     );
 
     setUsers(updatedUsers);
-    setCurrentUser({ ...currentUser, events: updatedEvents });
+    setCurrentUser({
+      ...currentUser,
+      events: sortedEvents,
+    });
   };
 
-  // Update event status automatically
   useEffect(() => {
     if (!currentUser) return;
 
     const interval = setInterval(() => {
       const now = new Date();
+
+      let hasChanges = false;
+
       const updatedEvents = currentUser.events.map((event) => {
         const eventDateTime = new Date(`${event.date}T${event.time}`);
-        if (event.status === "canceled") return event;
+
+        if (event.status === "canceled") {
+          return event;
+        }
 
         if (event.status === "upcoming" && !event.notificationScheduled) {
           scheduleEventNotification(event);
-          return { ...event, notificationScheduled: true };
+          hasChanges = true;
+
+          return {
+            ...event,
+            notificationScheduled: true,
+          };
         }
 
         if (event.status === "upcoming" && now >= eventDateTime) {
-          return { ...event, status: "complete" };
+          hasChanges = true;
+
+          return {
+            ...event,
+            status: "complete",
+          };
         }
+
         return event;
       });
 
-      updateUserEvents(sortEventsByStatus(updatedEvents));
+      if (hasChanges) {
+        updateUserEvents(updatedEvents);
+
+        setTimeout(() => {
+          debugAsyncStorage("AFTER EVENT STATUS UPDATE");
+        }, 500);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentUser?.events]);
+  }, [currentUser]);
 
   if (!currentUser) {
     return (
@@ -103,16 +134,23 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-yellow-200 items-center pt-20 px-4">
-      <Text className="text-lg text-gray-700">Welcome, {currentUser.name} 👋</Text>
-
+      <Text className="text-lg text-gray-700">
+        Welcome, {currentUser.name} 👋
+      </Text>
       <FlatList
         data={activeEvents}
         renderItem={({ item }) => (
           <EventList
             item={item}
-            onPressEdit={() => router.push(`/auth/tabs/edit-event?id=${item.id}`)}
-            onPressDelete={() => router.push(`/auth/tabs/delete-event?id=${item.id}`)}
-            onPressView={() => router.push(`/auth/tabs/view-event?id=${item.id}`)}
+            onPressEdit={() =>
+              router.push(`/auth/tabs/edit-event?id=${item.id}`)
+            }
+            onPressDelete={() =>
+              router.push(`/auth/tabs/delete-event?id=${item.id}`)
+            }
+            onPressView={() =>
+              router.push(`/auth/tabs/view-event?id=${item.id}`)
+            }
           />
         )}
         keyExtractor={(item) => item.id}
@@ -143,6 +181,7 @@ export default function Index() {
           <Ionicons name="add" size={40} color="black" />
         </TouchableOpacity>
       )}
+
       <TouchableOpacity
         className="absolute bottom-8 left-6 bg-green-500 rounded-full w-16 h-16 items-center justify-center shadow-lg"
         activeOpacity={0.8}

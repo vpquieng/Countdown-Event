@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { router } from 'expo-router';
-import { useAtom } from 'jotai';
-import { usersAtom, currentUserAtom, User } from '../atoms/userAtom';
-import { loginUser } from '../utils/auth-utils';
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { router } from "expo-router";
+import { useAtom } from "jotai";
+import { usersAtom, currentUserAtom, User } from "../atoms/userAtom";
+import { loginUser } from "../utils/auth-utils";
+import { debugAsyncStorage } from "../utils/debug-storage";
 
 export default function Login() {
   const [users] = useAtom(usersAtom);
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const loginDisable = !email.trim() || !password;
 
+  useEffect(() => {
+    debugAsyncStorage("LOGIN SCREEN STORAGE CHECK");
+  }, []);
+
   const handleLogin = async () => {
+    debugAsyncStorage("BEFORE LOGIN");
+
     const existingUser = users.find(
       (u: User) =>
         u.email.toLowerCase() === email.trim().toLowerCase() &&
@@ -21,18 +29,19 @@ export default function Login() {
     );
 
     if (!existingUser) {
-      Alert.alert('Login Failed', 'Invalid email or password.');
+      Alert.alert("Login Failed", "Invalid email or password.");
       return;
     }
 
-    // ✅ Generate token & save session
     const loggedInUser = await loginUser(existingUser);
 
-    // ✅ Save logged in user to Atom
     setCurrentUser(loggedInUser);
 
-    // ✅ Redirect to authenticated area
-    router.replace('/auth');
+    setTimeout(() => {
+      debugAsyncStorage("AFTER LOGIN");
+    }, 500);
+
+    router.replace("/auth");
   };
 
   return (
@@ -58,7 +67,7 @@ export default function Login() {
 
       <TouchableOpacity
         className={`w-full p-4 rounded-lg items-center ${
-          loginDisable ? 'bg-gray-400' : 'bg-green-500'
+          loginDisable ? "bg-gray-400" : "bg-green-500"
         }`}
         onPress={handleLogin}
         disabled={loginDisable}
@@ -67,10 +76,10 @@ export default function Login() {
       </TouchableOpacity>
 
       <Text className="text-center mt-4">
-        Don't have an account?{' '}
+        Don&apos;t have an account?{" "}
         <Text
           className="text-blue-600 font-semibold"
-          onPress={() => router.push('/register')}
+          onPress={() => router.push("/register")}
         >
           Register
         </Text>
