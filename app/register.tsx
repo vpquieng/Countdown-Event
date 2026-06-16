@@ -6,6 +6,7 @@ import { usersAtom, currentUserAtom, User } from "../atoms/userAtom";
 import { loginUser } from "../utils/auth-utils";
 import { debugAsyncStorage } from "../utils/debug-storage";
 import uuid from "react-native-uuid";
+import CustomTextInput from "./components/custom-text-input";
 import BackFooter from "./components/back-footer";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -92,8 +93,7 @@ export default function Register() {
         Register Account
       </Text>
 
-      <TextInput
-        className="w-full bg-white p-4 rounded-lg mb-4"
+      <CustomTextInput
         placeholder="Name"
         value={name}
         onChangeText={(text) =>
@@ -101,16 +101,14 @@ export default function Register() {
         }
       />
 
-      <TextInput
-        className="w-full bg-white p-4 rounded-lg mb-4"
+      <CustomTextInput
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
       />
 
-      <TextInput
-        className="w-full bg-white p-4 rounded-lg mb-4"
+      <CustomTextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
@@ -118,20 +116,18 @@ export default function Register() {
         keyboardType="email-address"
       />
 
-      <TextInput
-        className="w-full bg-white p-4 rounded-lg mb-4"
+      <CustomTextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        isPassword
       />
 
-      <TextInput
-        className="w-full bg-white p-4 rounded-lg mb-6"
+      <CustomTextInput
         placeholder="Confirm Password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
-        secureTextEntry
+        isPassword
       />
 
       <TouchableOpacity

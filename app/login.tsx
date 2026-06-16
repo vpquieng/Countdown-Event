@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
 import { router } from "expo-router";
 import { useAtom } from "jotai";
+import CustomTextInput from "./components/custom-text-input";
 import { usersAtom, currentUserAtom, User } from "../atoms/userAtom";
 import { loginUser } from "../utils/auth-utils";
 import { debugAsyncStorage } from "../utils/debug-storage";
@@ -48,8 +49,7 @@ export default function Login() {
     <View className="flex-1 justify-center items-center bg-yellow-200 px-6">
       <Text className="text-3xl font-bold mb-8 text-gray-800">Login</Text>
 
-      <TextInput
-        className="w-full bg-white p-4 rounded-lg mb-4"
+      <CustomTextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
@@ -57,13 +57,14 @@ export default function Login() {
         keyboardType="email-address"
       />
 
-      <TextInput
-        className="w-full bg-white p-4 rounded-lg mb-6"
+      <CustomTextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        isPassword
+        containerClassName="w-full bg-white rounded-lg mb-6"
       />
+  
 
       <TouchableOpacity
         className={`w-full p-4 rounded-lg items-center ${

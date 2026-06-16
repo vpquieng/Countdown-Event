@@ -5,6 +5,7 @@ import { useAtom } from 'jotai';
 import { usersAtom, currentUserAtom, User } from '../../../atoms/userAtom';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format } from 'date-fns';
+import CustomTextInput from '../../components/custom-text-input';
 import BackFooter from '../../components/back-footer';
 import uuid from 'react-native-uuid';
 
@@ -75,15 +76,17 @@ export default function AddEvent() {
         Add New Event
       </Text>
 
-      <TextInput
-        className="bg-white rounded-xl p-4 mb-4 text-lg"
+      <CustomTextInput
+        containerClassName="bg-white rounded-xl mb-4"
+        className="flex-1 text-lg p-4"
         placeholder="Event Title"
         value={title}
         onChangeText={setTitle}
       />
 
-      <TextInput
-        className="bg-white rounded-xl p-4 mb-4 text-lg"
+      <CustomTextInput
+        containerClassName="bg-white rounded-xl mb-4"
+        className="flex-1 text-lg p-4"
         placeholder="Description (optional)"
         value={description}
         onChangeText={setDescription}
