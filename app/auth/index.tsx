@@ -1,9 +1,9 @@
-import React, { useEffect, useLayoutEffect } from "react";
-import { Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
+import React, { useEffect } from "react";
+import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 import { usersAtom, currentUserAtom, User } from "../../atoms/userAtom";
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import { scheduleEventNotification } from "../../utils/handle-notification";
 import { sortEventsByStatus } from "../../utils/sort-event-status";
 import AddButton from "../components/add-event-button";
@@ -12,52 +12,12 @@ import { debugAsyncStorage } from "../../utils/debug-storage";
 
 export default function Index() {
   const router = useRouter();
-  const navigation = useNavigation();
 
   const [users, setUsers] = useAtom(usersAtom);
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
 
   const activeEvents =
     currentUser?.events?.filter((e) => e.status !== "complete") || [];
-
-  const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to log out?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Confirm",
-          style: "destructive",
-          onPress: () => {
-            setCurrentUser(null);
-
-            setTimeout(() => {
-              debugAsyncStorage("AFTER LOGOUT");
-            }, 500);
-
-            router.replace("/login");
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: "Countdown Event App",
-      headerTitleAlign: "center",
-      headerRight: () => (
-        <TouchableOpacity className="mr-4 p-2" onPress={handleLogout}>
-          <MaterialCommunityIcons name="logout" size={22} color="black" />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, currentUser]);
 
   const updateUserEvents = (updatedEvents: any[]) => {
     if (!currentUser) return;
@@ -137,6 +97,7 @@ export default function Index() {
       <Text className="text-lg text-gray-700">
         Welcome, {currentUser.name} 👋
       </Text>
+
       <FlatList
         data={activeEvents}
         renderItem={({ item }) => (

@@ -1,20 +1,23 @@
-import { Stack, Redirect, useSegments } from "expo-router";
+import { Stack, Redirect, useSegments, useRouter } from "expo-router";
 import { useAtom } from "jotai";
 import { currentUserAtom } from "../../atoms/userAtom";
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import {
   requestNotificationPermission,
   setupNotificationChannel,
 } from "../../utils/handle-notification";
-
+import HeaderTab from "../components/header-tab";
+import { debugAsyncStorage } from "../../utils/debug-storage";
 
 export default function AuthLayout() {
-  const [currentUser] = useAtom(currentUserAtom);
+  const router = useRouter();
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const segments = useSegments();
+
   const [permissionChecked, setPermissionChecked] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean>(true);
 
-  // Initialize notifications
   useEffect(() => {
     const initializeNotifications = async () => {
       await setupNotificationChannel();
@@ -22,15 +25,43 @@ export default function AuthLayout() {
       setHasPermission(granted);
       setPermissionChecked(true);
     };
+
     initializeNotifications();
   }, []);
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to log out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          style: "destructive",
+          onPress: () => {
+            setCurrentUser(null);
+
+            setTimeout(() => {
+              debugAsyncStorage("AFTER LOGOUT");
+            }, 500);
+
+            router.replace("/login");
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   if (!permissionChecked) return null;
 
   const onPermissionPage = segments?.includes("permission-denied");
 
   if (!hasPermission && !onPermissionPage) {
-    return <Redirect href="/auth/permission-denied" />
+    return <Redirect href="/auth/permission-denied" />;
   }
 
   if (!currentUser?.token) {
@@ -38,48 +69,69 @@ export default function AuthLayout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: true,
-        headerStyle: { backgroundColor: "#facc15" },
-        headerTitleStyle: { fontWeight: "bold", fontSize: 20 },
-      }}
-    >
-      {/* Main screen that shows your tab navigator */}
-      <Stack.Screen 
-        name="index" 
-        options={{ title: "Home", headerBackVisible: false }} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="index"
+        options={{
+          headerShown: true,
+          header: () => (
+            <HeaderTab
+              title="Countdown Event App"
+              showLogout
+              onPressLogout={handleLogout}
+            />
+          ),
+        }}
+      />
 
-      {/* Permission denied screen */}
       <Stack.Screen
         name="permission-denied"
-        options={{ title: "Permission Denied", headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
 
-      {/* Tabs screens (add-event, cancel-event, etc.) */}
       <Stack.Screen
         name="tabs/add-event"
-        options={{ title: "Add Event", headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
+
       <Stack.Screen
         name="tabs/cancel-event"
-        options={{ title: "Cancel Event", headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
+
       <Stack.Screen
         name="tabs/complete-event"
-        options={{ title: "Complete Events",headerShown: true, headerBackVisible: false }}
+        options={{
+          headerShown: true,
+          header: () => <HeaderTab title="Complete Events" />,
+        }}
       />
+
       <Stack.Screen
         name="tabs/delete-event"
-        options={{ title: "Delete Event", headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
+
       <Stack.Screen
         name="tabs/edit-event"
-        options={{ title: "Edit Event", headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
+
       <Stack.Screen
         name="tabs/view-event"
-        options={{title: "View Event", headerShown: false}}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack>
   );
