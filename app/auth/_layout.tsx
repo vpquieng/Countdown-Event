@@ -77,7 +77,9 @@ export default function AuthLayout() {
           header: () => (
             <HeaderTab
               title="Countdown Event App"
+              showMenu
               showLogout
+              onPressMenu={() => router.push("/auth/profile-menu")}
               onPressLogout={handleLogout}
             />
           ),
@@ -89,6 +91,36 @@ export default function AuthLayout() {
         options={{
           headerShown: false,
         }}
+      />
+
+      <Stack.Screen
+        name="profile-menu/index"
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="profile-menu/change-name"
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="profile-menu/change-username"
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="profile-menu/change-email"
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="profile-menu/change-password"
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="profile-menu/delete-profile"
+        options={{ headerShown: false }}
       />
 
       <Stack.Screen
