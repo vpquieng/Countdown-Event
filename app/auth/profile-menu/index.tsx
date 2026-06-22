@@ -12,9 +12,6 @@ const [currentUser] = useAtom(currentUserAtom);
   return (
     <View className="flex-1 bg-yellow-200 px-6 pt-20">
       <Text className="text-3xl font-bold text-center mb-8">
-        Profile Menu
-      </Text>
-      <Text className="text-2xl font-bold text-center mb-8">
         {currentUser?.username}
       </Text>
 

@@ -95,7 +95,16 @@ export default function AuthLayout() {
 
       <Stack.Screen
         name="profile-menu/index"
-        options={{ headerShown: false }}
+        options={{ 
+          headerShown: true,
+          header: () => (
+            <HeaderTab
+              title="Profile Menu"
+              showLogout
+              onPressLogout={handleLogout}
+            />
+          )
+        }}
       />
 
       <Stack.Screen
